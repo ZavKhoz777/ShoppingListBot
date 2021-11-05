@@ -12,9 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -53,11 +51,11 @@ public class Customer {
 
     @Column(name = "messages")
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "author",cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Message> messages = new LinkedList<>();
+    Set<Message> messages = new HashSet<>();
 
-//    @Column(name = "notes")
-//    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-//    List<Note> notes = new LinkedList<>();
+    @Column(name = "notes")
+    @OneToMany(fetch = FetchType.EAGER,mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Note> notes = new HashSet<>();
 //
 ////    @Column(name = "notes")
 ////    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "customers", cascade = CascadeType.ALL)
@@ -80,6 +78,25 @@ public class Customer {
                 ", creationDate=" + creationDate +
                 ", recordDate=" + recordDate +
                 ", messages=" + messages +
+                ", notes=" + notes +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return id.equals(customer.id) &&
+                tgId.equals(customer.tgId) &&
+                chat_id.equals(customer.chat_id) &&
+                Objects.equals(firstName, customer.firstName) &&
+                Objects.equals(lastName, customer.lastName) &&
+                creationDate.equals(customer.creationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, tgId, chat_id, firstName, lastName, creationDate);
     }
 }

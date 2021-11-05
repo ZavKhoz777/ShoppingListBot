@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -27,7 +28,7 @@ public class Message {
     String text;
 
     @JoinColumn(name = "customer_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     Customer author;
 
     @Column(name = "creation_date", updatable = false)
@@ -39,7 +40,24 @@ public class Message {
         return "Message{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
+                ", author=" + author.firstName +
                 ", creationDate=" + creationDate +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return id.equals(message.id) &&
+                Objects.equals(text, message.text) &&
+                author.equals(message.author) &&
+                creationDate.equals(message.creationDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, text, creationDate);
     }
 }
